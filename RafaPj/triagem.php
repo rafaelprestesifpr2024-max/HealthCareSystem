@@ -1,310 +1,255 @@
+<?php
+include "conexao.php";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $sql = "INSERT INTO pacientes
+            (
+                nome,
+                data_nascimento,
+                data_triagem,
+                hora_triagem,
+                queixa_principal,
+                sintomas,
+                historico,
+                medicamentos,
+                alergias,
+                pressao,
+                temperatura,
+                frequencia,
+                saturacao,
+                dor,
+                risco
+            )
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    $stmt = $conn->prepare($sql);
+
+    $stmt->bind_param(
+        "sssssssssssssis",
+        $_POST['nome'],
+        $_POST['data_nascimento'],
+        $_POST['data_triagem'],
+        $_POST['hora_triagem'],
+        $_POST['queixa_principal'],
+        $_POST['sintomas'],
+        $_POST['historico'],
+        $_POST['medicamentos'],
+        $_POST['alergias'],
+        $_POST['pressao'],
+        $_POST['temperatura'],
+        $_POST['frequencia'],
+        $_POST['saturacao'],
+        $_POST['dor'],
+        $_POST['risco']
+    );
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Triagem registrada com sucesso!');</script>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triagem Hospitalar</title>
 
-    <title>Triagem - SB Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
-    <link href="css/styles.css" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+        .card {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 18px;
+        }
+        .form-control,
+        .form-select {
+            border-radius: 10px;
+        }
+        .btn-risk {
+            height: 100px;
+            font-size: 18px;
+            border-radius: 15px;
+        }
+        .titulo {
+            font-weight: 700;
+        }
+    </style>
 </head>
 
-<body class="bg-dark">
-
-<div id="layoutAuthentication">
-
-    <div id="layoutAuthentication_content">
-
-        <main>
-
-            <div class="container">
-
-                <div class="row justify-content-center">
-
-                    <div class="col-lg-8">
-
-                        <div class="card shadow-lg border-0 rounded-lg mt-5">
-
-                            <div class="card-header">
-                                <h3 class="text-center font-weight-light my-4">
-                                    Triagem
-                                </h3>
-                            </div>
-
-
-                            <div class="card-body">
-
-                                <form action="salvar_triagem.php" method="POST">
-
-
-                                    <div class="form-floating mb-3">
-                                        <input class="form-control"
-                                               id="inputNome"
-                                               name="nome"
-                                               type="text"
-                                               placeholder="Nome Completo"
-                                               required>
-
-                                        <label for="inputNome">
-                                            Nome Completo
-                                        </label>
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-                                        <input class="form-control"
-                                               id="inputDataTriagem"
-                                               name="data_triagem"
-                                               type="date"
-                                               required>
-
-                                        <label for="inputDataTriagem">
-                                            Data da Triagem
-                                        </label>
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-                                        <input class="form-control"
-                                               id="inputQueixa"
-                                               name="queixa_principal"
-                                               type="text"
-                                               placeholder="Queixa Principal"
-                                               required>
-
-                                        <label for="inputQueixa">
-                                            Queixa Principal
-                                        </label>
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <textarea class="form-control"
-                                                  id="inputSintomas"
-                                                  name="sintomas"
-                                                  placeholder="Sintomas"
-                                                  style="height:100px"></textarea>
-
-                                        <label for="inputSintomas">
-                                            Sintomas
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <textarea class="form-control"
-                                                  id="inputHistorico"
-                                                  name="historico"
-                                                  placeholder="Histórico"
-                                                  style="height:100px"></textarea>
-
-                                        <label for="inputHistorico">
-                                            Histórico de Doenças
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputMedicamentos"
-                                               name="medicamentos"
-                                               type="text"
-                                               placeholder="Medicamentos">
-
-                                        <label for="inputMedicamentos">
-                                            Medicamentos em Uso
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputAlergias"
-                                               name="alergias"
-                                               type="text"
-                                               placeholder="Alergias">
-
-                                        <label for="inputAlergias">
-                                            Alergias
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputPressao"
-                                               name="pressao"
-                                               type="text"
-                                               placeholder="Pressão">
-
-                                        <label for="inputPressao">
-                                            Pressão Arterial
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputTemperatura"
-                                               name="temperatura"
-                                               type="number"
-                                               step="0.1"
-                                               placeholder="Temperatura">
-
-                                        <label for="inputTemperatura">
-                                            Temperatura (°C)
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputFrequenciaCardiaca"
-                                               name="frequencia_cardiaca"
-                                               type="number"
-                                               placeholder="Frequência">
-
-                                        <label for="inputFrequenciaCardiaca">
-                                            Frequência Cardíaca (bpm)
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputSaturacao"
-                                               name="saturacao"
-                                               type="number"
-                                               placeholder="Saturação">
-
-                                        <label for="inputSaturacao">
-                                            Saturação de Oxigênio (%)
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputDor"
-                                               name="escala_dor"
-                                               type="number"
-                                               min="0"
-                                               max="10"
-                                               placeholder="Dor">
-
-                                        <label for="inputDor">
-                                            Escala de Dor (0 a 10)
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputRisco"
-                                               name="classificacao_risco"
-                                               type="text"
-                                               placeholder="Risco">
-
-                                        <label for="inputRisco">
-                                            Classificação de Risco
-                                        </label>
-
-                                    </div>
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <textarea class="form-control"
-                                                  id="inputConduta"
-                                                  name="conduta"
-                                                  placeholder="Conduta"
-                                                  style="height:100px"></textarea>
-
-                                        <label for="inputConduta">
-                                            Conduta Inicial
-                                        </label>
-                                    </div>
-                                    <div class="form-floating mb-3">
-                                        <textarea class="form-control"
-                                                  id="inputObservacoes"
-                                                  name="observacoes"
-                                                  placeholder="Observações"
-                                                  style="height:120px"></textarea>
-                                        <label for="inputObservacoes">
-                                            Observações
-                                        </label>
-                                    </div>
-                                    <div class="d-grid">
-                                        <button type="submit" class="btn btn-dark">
-                                            Salvar Triagem
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="card-footer text-center py-3">
-                                <div class="small">
-                                    Sistema de Triagem
-                                </div>
+<body>
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="titulo">
+                <i class="fas fa-hospital text-danger"></i> Sistema de Triagem
+            </h1>
+            <p class="text-muted">Cadastro e classificação inicial do paciente</p>
+        </div>
+
+        <form method="POST">
+
+            <!-- Identificação -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="fas fa-user-injured"></i> Identificação do Paciente</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating">
+                                <input class="form-control" name="nome" placeholder="Nome" required>
+                                <label>Nome completo</label>
                             </div>
                         </div>
-
+                        <div class="col-md-3 mb-3">
+                            <div class="form-floating">
+                                <input type="date" class="form-control" name="data_nascimento">
+                                <label>Nascimento</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="form-floating">
+                                <input type="date" class="form-control" name="data_triagem" value="<?=date('Y-m-d')?>">
+                                <label>Data da triagem</label>
+                            </div>
+                        </div>
                     </div>
-
+                    <div class="form-floating">
+                        <input type="time" class="form-control" name="hora_triagem" value="<?=date('H:i')?>">
+                        <label>Hora do atendimento</label>
+                    </div>
                 </div>
-
             </div>
 
-        </main>
-
-    </div>
-
-
-    <div id="layoutAuthentication_footer">
-
-        <footer class="py-4 bg-light mt-auto">
-
-            <div class="container-fluid px-4">
-
-                <div class="text-center small text-muted">
-
-                    Copyright © Sistema de Triagem 2026
-
+            <!-- Motivo -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="fas fa-notes-medical"></i> Motivo do Atendimento</h5>
                 </div>
-
+                <div class="card-body">
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" name="queixa_principal" style="height:100px"></textarea>
+                        <label>Queixa principal</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" name="sintomas" style="height:120px"></textarea>
+                        <label>Sintomas relatados</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" name="historico" style="height:100px"></textarea>
+                        <label>Histórico clínico</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-floating">
+                                <input class="form-control" name="medicamentos">
+                                <label>Medicamentos em uso</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input class="form-control" name="alergias">
+                                <label>Alergias</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-        </footer>
+            <!-- Sinais Vitais -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5><i class="fas fa-heartbeat"></i> Sinais Vitais</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label>Pressão arterial</label>
+                            <input class="form-control" name="pressao" placeholder="120x80">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>Temperatura</label>
+                            <input class="form-control" name="temperatura" placeholder="36,5°C">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>Frequência cardíaca</label>
+                            <input class="form-control" name="frequencia" placeholder="80 bpm">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label>Saturação O²</label>
+                            <input class="form-control" name="saturacao" placeholder="98%">
+                        </div>
+                    </div>
+                    <div class="form-floating mt-3">
+                        <input type="number" min="0" max="10" class="form-control" name="dor">
+                        <label>Escala de dor (0 - 10)</label>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Risco -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-warning">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Classificação de Risco</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <input class="btn-check" type="radio" name="risco" id="azul" value="Azul">
+                            <label class="btn btn-outline-primary btn-risk w-100" for="azul">
+                                🔵 Azul <br><small>Não urgente</small>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="btn-check" type="radio" name="risco" id="verde" value="Verde">
+                            <label class="btn btn-outline-success btn-risk w-100" for="verde">
+                                🟢 Verde <br><small>Pouco urgente</small>
+                            </label>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="btn-check" type="radio" name="risco" id="amarelo" value="Amarelo">
+                            <label class="btn btn-outline-warning btn-risk w-100" for="amarelo">
+                                🟡 Amarelo <br><small>Urgente</small>
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="btn-check" type="radio" name="risco" id="laranja" value="Laranja">
+                            <label class="btn btn-outline-secondary btn-risk w-100" for="laranja">
+                                🟠 Laranja <br><small>Muito urgente</small>
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <input class="btn-check" type="radio" name="risco" id="vermelho" value="Vermelho">
+                            <label class="btn btn-outline-danger btn-risk w-100" for="vermelho">
+                                🔴 Vermelho <br><small>Emergência</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botão -->
+            <!-- Botões -->
+            <div class="d-flex justify-content-end gap-3 mb-5">
+                <button class="btn btn-dark btn-lg px-5">
+                    <i class="fas fa-save"></i> Registrar Triagem
+                </button>
+                <button type="button" 
+                        class="btn btn-dark btn-lg px-5" 
+                        onclick="window.location.href='home.php'">
+                    <i class="fas fa-home"></i> Retornar à home page
+                </button>
+            </div>
+
+        </form>
     </div>
-
-
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="js/scripts.js"></script>
-
 </body>
 </html>

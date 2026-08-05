@@ -1,210 +1,156 @@
+<?php
+session_start();
+require_once "conexao.php";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $email = $_POST["email"];
+    $senha = $_POST["senha"];
+
+    $sql  = "SELECT * FROM usuarios WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+
+    if (!$stmt) {
+        die("Erro: " . $conn->error);
+    }
+
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    if ($resultado->num_rows == 1) {
+        $usuario = $resultado->fetch_assoc();
+
+        if (password_verify($senha, $usuario["senha"])) {
+            $_SESSION["usuario_id"]    = $usuario["id"];
+            $_SESSION["usuario_nome"]  = $usuario["nome"];
+            $_SESSION["usuario_email"] = $usuario["email"];
+
+            header("Location: home.php");
+            exit;
+        } else {
+            $erro = "Senha incorreta.";
+        }
+    } else {
+        $erro = "Usuário não encontrado.";
+    }
+
+    $stmt->close();
+}
+$conn->close();
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - HealthSystem</title>
 
-    <title>Login - Sistema</title>
-
-    <link href="css/styles.css" rel="stylesheet" />
-
+    <link href="css/styles.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0d47a1, #1976d2, #42a5f5);
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .card-header {
+            background: #0d6efd;
+            color: white;
+            border: none;
+        }
+        .btn-primary {
+            background: #0d6efd;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #0b5ed7;
+        }
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
+        }
+        .logo {
+            font-size: 45px;
+            color: white;
+        }
+    </style>
 </head>
 
-
-<body class="bg-dark">
-
-
-<div id="layoutAuthentication">
-
-
-    <div id="layoutAuthentication_content">
-
-        <main>
-
-            <div class="container">
-
-                <div class="row justify-content-center">
-
-                    <div class="col-lg-5">
-
-
-                        <div class="card shadow-lg border-0 rounded-lg mt-5">
-
-
-                            <div class="card-header">
-
-                                <h3 class="text-center font-weight-light my-4">
-                                    Login
-                                </h3>
-
-                            </div>
-
-
-
-                            <div class="card-body">
-
-
-                                <form action="login.php" method="POST">
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputEmail"
-                                               name="email"
-                                               type="email"
-                                               placeholder="nome@email.com"
-                                               required>
-
-                                        <label for="inputEmail">
-                                            E-mail
-                                        </label>
-
-                                    </div>
-
-
-
-
-                                    <div class="form-floating mb-3">
-
-                                        <input class="form-control"
-                                               id="inputPassword"
-                                               name="senha"
-                                               type="password"
-                                               placeholder="Senha"
-                                               required>
-
-                                        <label for="inputPassword">
-                                            Senha
-                                        </label>
-
-                                    </div>
-
-
-
-
-
-                                    <div class="form-check mb-3">
-
-                                        <input class="form-check-input"
-                                               id="inputRememberPassword"
-                                               name="lembrar"
-                                               type="checkbox">
-
-                                        <label class="form-check-label" for="inputRememberPassword">
-                                            Lembrar senha
-                                        </label>
-
-                                    </div>
-
-
-
-
-
-                                    <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-
-
-                                        <a class="small" href="password.php">
-                                            Esqueceu a senha?
-                                        </a>
-
-
-                                        <button type="submit" class="btn btn-dark">
-                                            Entrar
-                                        </button>
-
-
-                                    </div>
-
-
-
-                                </form>
-
-
-                            </div>
-
-
-
-
-
-                            <div class="card-footer text-center py-3">
-
-
-                                <div class="small">
-
-                                    <a href="register.php">
-                                        Não possui uma conta? Cadastre-se!
-                                    </a>
-
+<body>
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-5">
+                            <div class="card shadow-lg mt-5">
+
+                                <div class="card-header text-center py-4">
+                                    <i class="fas fa-heart-pulse logo"></i>
+                                    <h2 class="mt-2">HealthSystem</h2>
+                                    <p class="mb-0">Sistema de Gestão Hospitalar</p>
                                 </div>
 
+                                <div class="card-body p-4">
+                                    <h4 class="text-center mb-4">Entrar no sistema</h4>
+
+                                    <?php if (isset($erro)): ?>
+                                        <div class="alert alert-danger"><?= $erro ?></div>
+                                    <?php endif; ?>
+
+                                    <form method="POST">
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" name="email" type="email" placeholder="nome@email.com" required>
+                                            <label><i class="fas fa-envelope"></i> E-mail</label>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" name="senha" type="password" placeholder="Senha" required>
+                                            <label><i class="fas fa-lock"></i> Senha</label>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <a class="small text-primary" href="password.php">Esqueceu a senha?</a>
+                                            <button type="submit" class="btn btn-primary px-4">
+                                                <i class="fas fa-right-to-bracket"></i> Entrar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="card-footer text-center py-3">
+                                    <div class="small">
+                                        <a href="cadastro.php">
+                                            <i class="fas fa-user-plus"></i> Não possui uma conta? Cadastre-se!
+                                            <br>
+                                        </a>
+                                    <div class="small">
+                                        <a href="index.php">Voltar para a tela inicial</a>
+                                    </div>
+                                    </div>
+                                </div>
 
                             </div>
-
-
-
                         </div>
-
-
                     </div>
-
-
                 </div>
-
-
-            </div>
-
-
-        </main>
-
-
-    </div>
-
-
-
-
-
-    <div id="layoutAuthentication_footer">
-
+            </main>
+        </div>
 
         <footer class="py-4 bg-light mt-auto">
-
-
-            <div class="container-fluid px-4">
-
-
-                <div class="text-center small text-muted">
-
-                    Copyright © Sistema de Triagem 2026
-
-                </div>
-
-
+            <div class="text-center small text-muted">
+                Copyright © HealthSystem 2026
             </div>
-
-
         </footer>
-
-
     </div>
 
-
-
-
-</div>
-
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="js/scripts.js"></script>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
