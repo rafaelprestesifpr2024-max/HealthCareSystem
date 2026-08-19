@@ -1,6 +1,0 @@
-<?php
-
-return [
-    "gemini_api_key" => "",
-    "gemini_model" => "gemini-3.6-flash"
-];
